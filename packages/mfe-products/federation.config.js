@@ -1,22 +1,21 @@
-// federation.config.js — Native Federation para mfe-products (REMOTE).
+// federation.config.js — Native Federation for mfe-products (REMOTE).
 //
-// Este é um REMOTE: EXPÕE módulos para o shell consumir.
-// Não declara outros remotes (sem chave `remotes`).
+// This is a REMOTE: it EXPOSES modules for the shell to consume.
+// It does not declare other remotes (no `remotes` key).
 //
-// EXPONDO './Routes':
-// Exponhamos o array de rotas ao invés de um único componente.
-// Isso permite que o shell use um sub-router, habilitando deep links
-// (ex: /products/123) dentro do remote.
+// EXPOSING './Routes':
+// We expose the routes array instead of a single component.
+// This allows the shell to use a sub-router, enabling deep links
+// (e.g. /products/123) within the remote.
 //
-// DEPENDÊNCIAS COMPARTILHADAS:
-// Mesmo padrão do shell — veja shell/federation.config.js para o raciocínio.
-// O remote DEVE compartilhar os mesmos pacotes com constraints compatíveis,
-// caso contrário Native Federation carrega duas instâncias do Angular e
-// quebra o DI system.
+// SHARED DEPENDENCIES:
+// Same pattern as the shell — see shell/federation.config.js for the rationale.
+// The remote MUST share the same packages with compatible constraints,
+// otherwise Native Federation loads two Angular instances and breaks the DI system.
 //
-// @org/contracts NÃO é compartilhado automaticamente pelo shareAll porque
-// é uma dependência `file:` — o nome de resolução não casa com o nome do
-// pacote. Declaramos explicitamente.
+// @org/contracts is NOT shared automatically by shareAll because
+// it is a `file:` dependency — the resolution name doesn't match the
+// package name. We declare it explicitly.
 
 const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
 
@@ -33,8 +32,8 @@ module.exports = withNativeFederation({
   name: 'mfe-products',
 
   exposes: {
-    // './Routes' mapeia para o array `routes` exportado.
-    // O shell carrega via: loadRemoteModule('mfe-products', './Routes')
+    // './Routes' maps to the exported `routes` array.
+    // The shell loads it via: loadRemoteModule('mfe-products', './Routes')
     './Routes': './src/app/app.routes.ts',
   },
 

@@ -1,7 +1,7 @@
-// products.mock.ts — Dados mock para o catálogo de produtos.
-// Em produção, substitua por uma chamada HttpClient à sua API.
-// Tipado com Product de @org/contracts para garantir type safety
-// entre o remote e qualquer consumidor (ex: mfe-checkout).
+// products.mock.ts — Mock data for the product catalog.
+// In production, replace with an HttpClient call to your API.
+// Typed with Product from @org/contracts to ensure type safety
+// between the remote and any consumer (e.g. mfe-checkout).
 
 import { Product } from '@org/contracts';
 
@@ -9,37 +9,37 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: '1',
     name: 'Angular T-Shirt',
-    description: 'Camiseta oficial da comunidade Angular. 100% algodão.',
+    description: 'Official Angular community shirt. 100% cotton.',
     price: 29.99,
     imageUrl: 'https://placehold.co/280x280/dd0031/white?text=Angular',
-    category: 'Vestuário',
+    category: 'Apparel',
     stock: 42,
   },
   {
     id: '2',
     name: 'RxJS Mug',
-    description: 'Recipiente de combustível para programação reativa.',
+    description: 'Fuel container for reactive programming.',
     price: 14.99,
     imageUrl: 'https://placehold.co/280x280/e14ea8/white?text=RxJS',
-    category: 'Acessórios',
+    category: 'Accessories',
     stock: 18,
   },
   {
     id: '3',
     name: 'Native Federation Hoodie',
-    description: 'Fique aquecido enquanto seus módulos carregam em paralelo.',
+    description: 'Stay warm while your modules load in parallel.',
     price: 49.99,
     imageUrl: 'https://placehold.co/280x280/1976d2/white?text=NF',
-    category: 'Vestuário',
+    category: 'Apparel',
     stock: 7,
   },
   {
     id: '4',
     name: 'TypeScript Sticker Pack',
-    description: 'Adesivos para seu laptop. Type safety nunca pareceu tão bom.',
+    description: 'Stickers for your laptop. Type safety never looked so good.',
     price: 9.99,
     imageUrl: 'https://placehold.co/280x280/3178c6/white?text=TS',
-    category: 'Acessórios',
+    category: 'Accessories',
     stock: 99,
   },
 ];

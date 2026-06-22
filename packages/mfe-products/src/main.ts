@@ -1,10 +1,10 @@
-// main.ts — Ponto de entrada do remote.
+// main.ts — Remote entry point.
 //
-// Remotes também chamam initFederation() — mas SEM argumentos.
-// WHY: o argumento de manifest só é usado pelo HOST (shell) para resolver
-// outros remotes. O próprio remoteEntry do remote já é conhecido pelo shell
-// pois o shell o buscou a partir do manifest. Passar um manifest aqui faria
-// o remote tentar buscar um sub-manifest próprio, que é um anti-padrão.
+// Remotes also call initFederation() — but WITHOUT arguments.
+// WHY: the manifest argument is only used by the HOST (shell) to resolve
+// other remotes. The remote's own remoteEntry is already known by the shell
+// because the shell fetched it from the manifest. Passing a manifest here
+// would cause the remote to try fetching its own sub-manifest, which is an anti-pattern.
 
 import { initFederation } from '@angular-architects/native-federation';
 

@@ -1,8 +1,8 @@
 @if (items().length === 0) {
   <div class="cart-empty">
-    <p>Seu carrinho está vazio.</p>
+    <p>Your cart is empty.</p>
     <p class="cart-hint">
-      Vá para <strong>Products</strong> e adicione itens para vê-los aqui.
+      Go to <strong>Products</strong> and add items to see them here.
     </p>
   </div>
 } @else {
@@ -12,20 +12,20 @@
         <img [src]="item.product.imageUrl" [alt]="item.product.name" />
         <div class="cart-item-details">
           <span class="item-name">{{ item.product.name }}</span>
-          <span class="item-qty">Qtd: {{ item.quantity }}</span>
+          <span class="item-qty">Qty: {{ item.quantity }}</span>
         </div>
         <span class="item-subtotal">
-          {{ item.product.price * item.quantity | currency: 'BRL' }}
+          {{ item.product.price * item.quantity | currency: 'USD' }}
         </span>
       </li>
     }
   </ul>
 
   <div class="cart-footer">
-    <strong class="cart-total">Total: {{ totalPrice() | currency: 'BRL' }}</strong>
+    <strong class="cart-total">Total: {{ totalPrice() | currency: 'USD' }}</strong>
     <div class="cart-actions">
-      <button class="btn-clear" (click)="clearCart.emit()">Limpar</button>
-      <button class="btn-checkout">Finalizar Pedido</button>
+      <button class="btn-clear" (click)="clearCart.emit()">Clear</button>
+      <button class="btn-checkout">Place Order</button>
     </div>
   </div>
 }

@@ -1,26 +1,28 @@
 # Angular MFE Starter Kit
 
-> Referência de produção para **Microfrontends com Angular 21 + Native Federation** em topologia polyrepo. Cada decisão técnica está documentada no código — o "porquê" junto com o "o quê".
+> Production reference for **Microfrontends with Angular 21 + Native Federation** in a polyrepo topology. Every technical decision is documented in the code — the "why" alongside the "what".
 
 [![Angular](https://img.shields.io/badge/Angular-21-dd0031?logo=angular)](https://angular.dev)
 [![Native Federation](https://img.shields.io/badge/Native_Federation-21.2-1976d2)](https://github.com/angular-architects/module-federation-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
----
-
-## O que é este projeto?
-
-A maioria dos tutoriais de Microfrontend mostra dois botões numa tela e chama de "MFE". Este repo é diferente: é uma **implementação de produção mínima** com shell real, múltiplos remotes com deploy independente, comunicação cross-MFE sem acoplamento e estratégia de dependências compartilhadas documentada.
-
-Use como:
-
-- **Referência arquitetural** para entender as decisões que os tutoriais omitem
-- **Template** para iniciar um projeto MFE real
-- **Material de estudo** — cada arquivo tem comentários explicando o "porquê"
+🇧🇷 [Leia em Português](./README.pt-BR.md)
 
 ---
 
-## Arquitetura
+## What is this project?
+
+Most Microfrontend tutorials show two buttons on a screen and call it "MFE". This repo is different: it's a **minimal production implementation** with a real shell, multiple independently deployable remotes, cross-MFE communication without coupling, and a documented shared dependencies strategy.
+
+Use it as:
+
+- **Architectural reference** to understand the decisions tutorials omit
+- **Template** to start a real MFE project
+- **Study material** — each file has comments explaining the "why"
+
+---
+
+## Architecture
 
 ```
 Browser
@@ -41,7 +43,7 @@ Browser
        └───────┬───────┘
                ▼
    ┌───────────────────────────┐
-   │   Dependências via        │
+   │   Dependencies via        │
    │     Import Map            │
    │  @angular/*  (singleton)  │
    │  rxjs, tslib (singleton)  │
@@ -49,27 +51,27 @@ Browser
    └───────────────────────────┘
 ```
 
-### Comunicação entre remotes (sem import direto)
+### Cross-remote communication (no direct import)
 
 ```
-mfe-products ──emit(PRODUCT_SELECTED)──► EventBus ──► mfe-checkout (atualiza carrinho)
-                                                  └──► shell header (badge numérico)
+mfe-products ──emit(PRODUCT_SELECTED)──► EventBus ──► mfe-checkout (updates cart)
+                                                  └──► shell header (badge counter)
 ```
 
-O `EventBus` é um `Subject<MfeEvent>` no pacote `@org/contracts`. Nenhum remote importa código do outro.
+The `EventBus` is a `Subject<MfeEvent>` in the `@org/contracts` package. No remote imports code from another.
 
 ---
 
-## Pré-requisitos
+## Prerequisites
 
-| Ferramenta | Versão mínima | Verificar |
+| Tool | Minimum version | Check |
 |---|---|---|
 | Node.js | 20.x | `node -v` |
 | npm | 10.x | `npm -v` |
 | Angular CLI | 21.x (global) | `ng version` |
 
 ```bash
-# Instalar Angular CLI globalmente (se ainda não tiver)
+# Install Angular CLI globally (if you haven't already)
 npm install -g @angular/cli@^21
 ```
 
@@ -78,144 +80,144 @@ npm install -g @angular/cli@^21
 ## Quick Start
 
 ```bash
-# 1. Clone o repositório
+# 1. Clone the repository
 git clone https://github.com/GhabryelHenrique/mfe-starter-kit.git
 cd mfe-starter-kit
 
-# 2. Instala dependências de todos os pacotes (root + 4 packages)
+# 2. Install dependencies for all packages (root + 4 packages)
 npm run install:all
 
-# 3. Compila @org/contracts — DEVE ser feito antes dos Angular apps
-#    (é uma dependência file: dos três apps)
+# 3. Build @org/contracts — MUST be done before the Angular apps
+#    (it's a file: dependency for all three apps)
 npm run build:contracts
 
-# 4. Sobe todos os pacotes em paralelo com saída colorida
+# 4. Start all packages in parallel with color-coded output
 npm run dev
 ```
 
-Abra **http://localhost:4200**. Tempo estimado: < 2 minutos com cache npm quente.
+Open **http://localhost:4200**. Estimated time: < 2 minutes with a warm npm cache.
 
-### Documentação interativa
+### Interactive documentation
 
 ```bash
-# Em outro terminal — sobe o app de documentação
+# In another terminal — starts the documentation app
 npm run docs
 ```
 
-Abra **http://localhost:4203** para ver a documentação completa com exemplos de código.
+Open **http://localhost:4203** for the full documentation with code examples.
 
 ---
 
-## Como testar o Event Bus (demo do projeto)
+## Testing the Event Bus (project demo)
 
-1. Acesse **<http://localhost:4200>** → redireciona para `/products`
-2. Clique **"Adicionar ao Carrinho"** em qualquer produto
-3. Observe o **badge numérico** no header atualizar em tempo real
-4. Navegue para **Checkout** — o item aparece no carrinho
-5. Clique **Limpar** — o badge volta a zero
+1. Go to **<http://localhost:4200>** → redirects to `/products`
+2. Click **"Add to Cart"** on any product
+3. Watch the **badge counter** in the header update in real time
+4. Navigate to **Checkout** — the item appears in the cart
+5. Click **Clear** — the badge resets to zero
 
-Nenhuma dessas ações envolve import direto entre `mfe-products` e `mfe-checkout`. Tudo passa pelo `EventBus` em `@org/contracts`.
+None of these actions involve a direct import between `mfe-products` and `mfe-checkout`. Everything goes through the `EventBus` in `@org/contracts`.
 
 ---
 
-## Pacotes
+## Packages
 
-| Pacote | Porta | Papel | O que expõe |
+| Package | Port | Role | What it exposes |
 | --- | --- | --- | --- |
 | `mfe-shell` | 4200 | Host | layout, router, manifest |
 | `mfe-products` | 4201 | Remote | `./Routes` → ProductsListComponent |
 | `mfe-checkout` | 4202 | Remote | `./Routes` → CheckoutPageComponent |
-| `mfe-contracts` | — | Biblioteca TS | EventBus, MfeEvent, Product, CartItem |
-| `mfe-docs` | 4203 | App de docs | — |
+| `mfe-contracts` | — | TS Library | EventBus, MfeEvent, Product, CartItem |
+| `mfe-docs` | 4203 | Docs app | — |
 
 ---
 
-## Como funciona — decisões técnicas
+## How it works — technical decisions
 
-### 1. `initFederation()` antes do bootstrap
+### 1. `initFederation()` before bootstrap
 
 ```typescript
 // packages/mfe-shell/src/main.ts
-initFederation(environment.federationManifest)  // ← PRIMEIRO
-  .then(() => import('./bootstrap'));            // ← só depois o Angular sobe
+initFederation(environment.federationManifest)  // ← FIRST
+  .then(() => import('./bootstrap'));            // ← Angular boots only after
 ```
 
-**Por quê?** Native Federation injeta um **Import Map** no browser em runtime. Esse Import Map é o que permite que `loadRemoteModule()` dentro das rotas saiba a URL real de cada remote. Se `bootstrapApplication()` rodasse antes, as chamadas de `loadRemoteModule()` falhariam porque o Import Map ainda não existiria.
+**Why?** Native Federation injects an **Import Map** into the browser at runtime. This Import Map is what allows `loadRemoteModule()` inside the routes to know the real URL of each remote. If `bootstrapApplication()` ran first, calls to `loadRemoteModule()` would fail because the Import Map wouldn't exist yet.
 
 ---
 
-### 2. Manifest por ambiente
+### 2. Per-environment manifest
 
-Três arquivos JSON, um por ambiente:
+Three JSON files, one per environment:
 
 ```
 public/
   federation.manifest.dev.json      → localhost:4201, localhost:4202
-  federation.manifest.staging.json  → URLs de staging
-  federation.manifest.prod.json     → URLs de produção
+  federation.manifest.staging.json  → staging URLs
+  federation.manifest.prod.json     → production URLs
 ```
 
-O `angular.json` usa `fileReplacements` para trocar `environment.ts` conforme a configuração de build:
+`angular.json` uses `fileReplacements` to swap `environment.ts` according to the build configuration:
 
 ```bash
-ng build --configuration production  # usa environment.prod.ts → manifest.prod.json
-ng build --configuration staging     # usa environment.staging.ts → manifest.staging.json
-ng serve                             # usa environment.ts → manifest.dev.json
+ng build --configuration production  # uses environment.prod.ts → manifest.prod.json
+ng build --configuration staging     # uses environment.staging.ts → manifest.staging.json
+ng serve                             # uses environment.ts → manifest.dev.json
 ```
 
-**Por quê isso importa?** O shell não precisa ser rebuildado quando um remote faz deploy. Só o `federation.manifest.prod.json` precisa ser atualizado com a nova URL do remote. Veja `.github/workflows/ci-products.yml` para o padrão de automação.
+**Why this matters?** The shell doesn't need to be rebuilt when a remote deploys. Only `federation.manifest.prod.json` needs to be updated with the remote's new URL. See `.github/workflows/ci-products.yml` for the automation pattern.
 
 ---
 
-### 3. Estratégia de shared deps (`strictVersion`)
+### 3. Shared deps strategy (`strictVersion`)
 
 ```javascript
-// federation.config.js — padrão em todos os pacotes
+// federation.config.js — pattern used in all packages
 shared: {
-  // Baseline: compartilha tudo, permite divergência de patch/minor
+  // Baseline: share everything, allow patch/minor divergence
   ...shareAll({ singleton: true, strictVersion: false, requiredVersion: 'auto' }),
 
-  // Override para Angular — DI system global, zero tolerância
+  // Override for Angular — global DI system, zero tolerance
   '@angular/core': { singleton: true, strictVersion: true, requiredVersion: 'auto' },
 
-  // @org/contracts — singleton obrigatório para o EventBus funcionar
+  // @org/contracts — mandatory singleton for EventBus to work
   '@org/contracts': { singleton: true, strictVersion: true, requiredVersion: 'auto' },
 }
 ```
 
-| Configuração | Comportamento | Quando usar |
+| Setting | Behavior | When to use |
 |---|---|---|
-| `strictVersion: false` | Versões diferentes coexistem (usa a do host) | RxJS, tslib, libs utilitárias |
-| `strictVersion: true` | Versão diferente = **erro em runtime** | Angular core, `@org/contracts` |
-| `singleton: true` | Apenas **1 instância** no browser | Tudo que tiver estado global |
+| `strictVersion: false` | Different versions coexist (uses the host's) | RxJS, tslib, utility libs |
+| `strictVersion: true` | Version mismatch = **runtime error** | Angular core, `@org/contracts` |
+| `singleton: true` | Only **1 instance** in the browser | Everything with global state |
 
-Ver [`SHARED_DEPS.md`](./SHARED_DEPS.md) para a análise completa.
+See [`SHARED_DEPS.md`](./SHARED_DEPS.md) for the full analysis.
 
 ---
 
-### 4. Comunicação cross-MFE com `@org/contracts`
+### 4. Cross-MFE communication with `@org/contracts`
 
-**Anti-padrão** (acoplamento direto):
+**Anti-pattern** (direct coupling):
 
 ```typescript
-// ❌ NUNCA faça isso em mfe-checkout
+// ❌ NEVER do this in mfe-checkout
 import { ProductsListComponent } from 'mfe-products/...'
 ```
 
-**Padrão correto** (via contrato):
+**Correct pattern** (via contract):
 
 ```typescript
-// ✅ mfe-checkout só conhece @org/contracts
+// ✅ mfe-checkout only knows @org/contracts
 this.bus.on('PRODUCT_SELECTED').subscribe(event => {
-  // event.payload é Product — tipagem completa pelo discriminated union
+  // event.payload is Product — full typing via discriminated union
 });
 ```
 
-O `EventBusService` é um **singleton de módulo JS** — a variável `_instance` existe uma única vez porque `@org/contracts` é carregado uma única vez pelo browser (garantido pelo `singleton: true` no shared config de todos os pacotes).
+The `EventBusService` is a **JS module singleton** — the `_instance` variable exists exactly once because `@org/contracts` is loaded exactly once by the browser (guaranteed by `singleton: true` in the shared config of all packages).
 
 ---
 
-### 5. Error boundary por rota
+### 5. Per-route error boundary
 
 ```typescript
 // packages/mfe-shell/src/app/app.routes.ts
@@ -225,120 +227,120 @@ O `EventBusService` é um **singleton de módulo JS** — a variável `_instance
     loadRemoteModule('mfe-products', './Routes')
       .then(m => m.routes)
       .catch(() => [{ path: '**', component: RemoteErrorComponent }])
-      //     ↑ remote offline → mostra página de erro sem quebrar o shell
+      //     ↑ remote offline → shows error page without breaking the shell
 }
 ```
 
-**Teste:** derrube o processo `mfe-products` e navegue para `/products` → `RemoteErrorComponent` renderiza. As outras rotas continuam funcionando.
+**Test it:** stop the `mfe-products` process and navigate to `/products` → `RemoteErrorComponent` renders. Other routes keep working.
 
 ---
 
-## Estrutura de pacotes
+## Package structure
 
 ```
 mfe-starter-kit/
 ├── .github/workflows/
 │   ├── ci-shell.yml       # build + deploy shell
-│   ├── ci-products.yml    # build + deploy + atualiza manifest
+│   ├── ci-products.yml    # build + deploy + update manifest
 │   └── ci-checkout.yml
 ├── packages/
-│   ├── mfe-contracts/     # @org/contracts — TypeScript puro
+│   ├── mfe-contracts/     # @org/contracts — pure TypeScript
 │   │   └── src/lib/
 │   │       ├── events.ts             # MfeEvent discriminated union
 │   │       ├── event-bus.service.ts  # Subject + on<K>() + getInstance()
 │   │       └── models/               # Product, CartItem
 │   ├── mfe-shell/
-│   │   ├── federation.config.js      # host: shared deps documentados
-│   │   ├── public/                   # 3 manifests por ambiente
+│   │   ├── federation.config.js      # host: documented shared deps
+│   │   ├── public/                   # 3 manifests per environment
 │   │   └── src/
 │   │       ├── main.ts               # initFederation() → import('./bootstrap')
-│   │       ├── environments/         # 3 arquivos de ambiente
+│   │       ├── environments/         # 3 environment files
 │   │       └── app/
 │   │           ├── app.routes.ts     # loadRemoteModule + error boundary
 │   │           ├── core/tokens/      # EVENT_BUS InjectionToken
 │   │           └── layout/           # ShellLayout, Header (badge), Footer
 │   ├── mfe-products/
-│   │   ├── federation.config.js      # remote: expõe './Routes'
+│   │   ├── federation.config.js      # remote: exposes './Routes'
 │   │   └── src/app/products/         # ProductsList (emit), ProductCard
 │   ├── mfe-checkout/
-│   │   ├── federation.config.js      # remote: expõe './Routes'
+│   │   ├── federation.config.js      # remote: exposes './Routes'
 │   │   └── src/app/checkout/         # CheckoutPage (subscribe), Cart
 │   └── mfe-docs/
-│       └── src/app/pages/            # Documentação interativa (:4203)
-├── scripts/dev.js         # concurrently: contratos + 3 Angular apps
-├── SHARED_DEPS.md         # análise completa do trade-off strictVersion
-└── CONTRIBUTING.md        # como extrair para polyrepo real
+│       └── src/app/pages/            # Interactive documentation (:4203)
+├── scripts/dev.js         # concurrently: contracts + 3 Angular apps
+├── SHARED_DEPS.md         # full strictVersion trade-off analysis
+└── CONTRIBUTING.md        # how to extract to a real polyrepo
 ```
 
 ---
 
-## Como adicionar um novo remote
+## Adding a new remote
 
 ```bash
-# 1. Scaffolda o projeto Angular dentro de packages/
+# 1. Scaffold the Angular project inside packages/
 cd packages
 ng new mfe-dashboard --routing --style=scss --standalone --skip-git
 
-# 2. Adiciona Native Federation como remote na porta 4203
+# 2. Add Native Federation as a remote on port 4204
 cd mfe-dashboard
 ng add @angular-architects/native-federation@^21 --type remote --port 4204
 
-# 3. Copie o padrão de federation.config.js de mfe-products
-#    (substitua name: 'mfe-products' por name: 'mfe-dashboard')
-#    (substitua './Routes' pelo path correto)
+# 3. Copy the federation.config.js pattern from mfe-products
+#    (replace name: 'mfe-products' with name: 'mfe-dashboard')
+#    (replace './Routes' with the correct path)
 
-# 4. Adicione @org/contracts no package.json e npm install
+# 4. Add @org/contracts to package.json and run npm install
 #    "@org/contracts": "file:../mfe-contracts"
 
-# 5. Adicione a entrada no manifest de dev
+# 5. Add the entry to the dev manifest
 #    packages/mfe-shell/public/federation.manifest.dev.json:
 #    "mfe-dashboard": "http://localhost:4204/remoteEntry.json"
 
-# 6. Adicione a rota no shell (packages/mfe-shell/src/app/app.routes.ts)
+# 6. Add the route in the shell (packages/mfe-shell/src/app/app.routes.ts)
 #    { path: 'dashboard', loadChildren: () => loadRemoteModule('mfe-dashboard', './Routes')... }
 
-# 7. Adicione o processo em scripts/dev.js
+# 7. Add the process in scripts/dev.js
 
-# 8. Crie .github/workflows/ci-dashboard.yml
+# 8. Create .github/workflows/ci-dashboard.yml
 ```
 
 ---
 
 ## Troubleshooting
 
-| Sintoma | Causa provável | Solução |
+| Symptom | Likely cause | Solution |
 | --- | --- | --- |
-| Console: "Angular loaded twice" ou erro de DI | `singleton: true` ausente em algum pacote | Verificar `federation.config.js` de todos — `@angular/core` deve ter `singleton: true` em todos |
-| Error boundary aparece ao carregar remote | URL errada no manifest ou remote offline | Conferir `public/federation.manifest.dev.json` e se `npm run dev` está rodando |
-| Badge do header não atualiza / CART_UPDATED não chega | `@org/contracts` não está no `shared` config | Adicionar `'@org/contracts': { singleton: true, strictVersion: true }` em todos os `federation.config.js` |
-| Erro `Unsatisfied version constraint` em runtime | Versões Angular divergentes entre shell e remote | Sincronizar `@angular/*` no `package.json` de todos os pacotes para a mesma versão |
+| Console: "Angular loaded twice" or DI error | `singleton: true` missing in some package | Check `federation.config.js` for all packages — `@angular/core` must have `singleton: true` everywhere |
+| Error boundary appears when loading a remote | Wrong URL in manifest or remote is offline | Check `public/federation.manifest.dev.json` and whether `npm run dev` is running |
+| Header badge doesn't update / CART_UPDATED doesn't arrive | `@org/contracts` not in `shared` config | Add `'@org/contracts': { singleton: true, strictVersion: true }` to all `federation.config.js` |
+| `Unsatisfied version constraint` error at runtime | Angular versions differ between shell and remote | Sync `@angular/*` in all packages' `package.json` to the same version |
 
 ---
 
 ## Roadmap
 
 - [x] MVP: shell + 2 remotes + event bus
-- [x] Comunicação cross-MFE via `@org/contracts`
-- [x] Manifest por ambiente (dev / staging / prod)
-- [x] Error boundary por rota
-- [x] CI/CD independente por remote
-- [x] App de documentação (`mfe-docs`)
-- [ ] mfe-dashboard (terceiro remote de exemplo)
-- [ ] Auth guard integrado (JWT + interceptor no shell)
-- [ ] Testes e2e com Playwright (shell carrega remotes reais)
-- [ ] GitHub Packages publish pipeline para `@org/contracts`
+- [x] Cross-MFE communication via `@org/contracts`
+- [x] Per-environment manifest (dev / staging / prod)
+- [x] Per-route error boundary
+- [x] Independent CI/CD per remote
+- [x] Documentation app (`mfe-docs`)
+- [ ] mfe-dashboard (third example remote)
+- [ ] Integrated auth guard (JWT + interceptor in the shell)
+- [ ] E2E tests with Playwright (shell loads real remotes)
+- [ ] GitHub Packages publish pipeline for `@org/contracts`
 
 ---
 
-## Referências
+## References
 
 - [Native Federation for Angular](https://www.npmjs.com/package/@angular-architects/native-federation)
-- [SHARED_DEPS.md](./SHARED_DEPS.md) — análise completa do trade-off `strictVersion`
-- [CONTRIBUTING.md](./CONTRIBUTING.md) — como extrair para polyrepo real
-- [Documentação interativa](http://localhost:4203) — `npm run docs`
+- [SHARED_DEPS.md](./SHARED_DEPS.md) — full `strictVersion` trade-off analysis
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — how to extract to a real polyrepo
+- [Interactive documentation](http://localhost:4203) — `npm run docs`
 
 ---
 
-## Licença
+## License
 
 MIT © 2025 — GhabryelHenrique

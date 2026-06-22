@@ -1,32 +1,32 @@
-// federation.config.js — Native Federation para o SHELL (host).
+// federation.config.js — Native Federation for the SHELL (host).
 //
-// O shell é um HOST: não expõe módulos (sem `exposes`).
-// Apenas declara quais dependências compartilha com os remotes.
+// The shell is a HOST: it does not expose modules (no `exposes` key).
+// It only declares which dependencies it shares with the remotes.
 //
-// ESTRATÉGIA DE SHARED DEPS:
+// SHARED DEPS STRATEGY:
 // ─────────────────────────────────────────────────────────────────────────────
-// shareAll()        → compartilha TUDO que está no package.json automaticamente.
-//                     Opt out com o array `skip`.
+// shareAll()        → shares EVERYTHING in package.json automatically.
+//                     Opt out with the `skip` array.
 //
-// singleton: true   → Apenas UMA cópia da lib é carregada em TODOS os MFEs.
-//                     OBRIGATÓRIO para Angular (zone.js, platform, router, DI
-//                     system são globais — duas instâncias = bugs impossíveis
-//                     de debugar em runtime).
+// singleton: true   → Only ONE copy of the lib is loaded across ALL MFEs.
+//                     REQUIRED for Angular (zone.js, platform, router, DI
+//                     system are global — two instances = impossible-to-debug
+//                     runtime bugs).
 //
-// strictVersion: false (baseline) → Um remote com rxjs@7.8.1 pode usar o
-//                     rxjs@7.8.0 do shell sem erro. Trade-off: perde garantia
-//                     de versão em compilação.
-//                     Ver SHARED_DEPS.md para análise completa.
+// strictVersion: false (baseline) → A remote with rxjs@7.8.1 can use the
+//                     shell's rxjs@7.8.0 without error. Trade-off: loses
+//                     version guarantee at compile time.
+//                     See SHARED_DEPS.md for full analysis.
 //
 // Angular override → strictVersion: true
-//                     Angular DEVE ser exatamente o mesmo major.minor em todos
-//                     os MFEs. Versões diferentes do Angular core causam falhas
-//                     sutis de DI que são difíceis de diagnosticar.
+//                     Angular MUST be the exact same major.minor across all
+//                     MFEs. Different Angular core versions cause subtle DI
+//                     failures that are hard to diagnose.
 //
 // @org/contracts    → singleton: true + strictVersion: true
-//                     O EventBusService usa um singleton de módulo JS.
-//                     Sem singleton federation, cada MFE carrega sua própria
-//                     instância de @org/contracts e o Subject não é compartilhado.
+//                     EventBusService uses a JS module singleton.
+//                     Without federation singleton, each MFE loads its own
+//                     instance of @org/contracts and the Subject is not shared.
 
 const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
 
@@ -40,20 +40,20 @@ const ANGULAR_PACKAGES = [
 ];
 
 module.exports = withNativeFederation({
-  // Host não tem `name` nem `exposes`.
-  // Se quiser que o shell também atue como remote (padrão avançado),
-  // adicione name: 'shell' e o mapa de exposes aqui.
+  // Host has no `name` or `exposes`.
+  // To make the shell also act as a remote (advanced pattern),
+  // add name: 'shell' and the exposes map here.
 
   shared: {
-    // Baseline: compartilha tudo, permite divergência de minor/patch.
+    // Baseline: share everything, allow minor/patch divergence.
     ...shareAll({
       singleton: true,
       strictVersion: false,
       requiredVersion: 'auto',
     }),
 
-    // Pacotes Angular: strictVersion: true — DI system global, zero tolerância.
-    // Este override sobrescreve o baseline acima para esses pacotes específicos.
+    // Angular packages: strictVersion: true — global DI system, zero tolerance.
+    // This override replaces the baseline above for these specific packages.
     ...Object.fromEntries(
       ANGULAR_PACKAGES.map((pkg) => [
         pkg,
@@ -61,13 +61,13 @@ module.exports = withNativeFederation({
       ])
     ),
 
-    // @org/contracts deve ser singleton para o EventBusService ser compartilhado.
+    // @org/contracts must be singleton so EventBusService is shared.
     '@org/contracts': { singleton: true, strictVersion: true, requiredVersion: 'auto' },
   },
 
   skip: [
-    // Sub-entrypoints do rxjs raramente usados em browser apps.
-    // Remover reduz o tamanho do Import Map.
+    // Rarely used rxjs sub-entrypoints in browser apps.
+    // Removing them reduces the Import Map size.
     'rxjs/ajax',
     'rxjs/fetch',
     'rxjs/testing',
@@ -75,8 +75,8 @@ module.exports = withNativeFederation({
   ],
 
   features: {
-    // Evita erros de build de dependências transitivas não usadas
-    // (ex: pacotes Node.js-only puxados por algumas libs).
+    // Avoids build errors from unused transitive dependencies
+    // (e.g. Node.js-only packages pulled in by some libs).
     ignoreUnusedDeps: true,
   },
 });

@@ -1,12 +1,12 @@
-// federation.config.js — Native Federation para mfe-checkout (REMOTE).
+// federation.config.js — Native Federation for mfe-checkout (REMOTE).
 //
-// Mesmo padrão do mfe-products — veja mfe-products/federation.config.js
-// para comentários detalhados sobre cada decisão.
+// Same pattern as mfe-products — see mfe-products/federation.config.js
+// for detailed comments on each decision.
 //
-// PONTO CHAVE deste remote:
-// mfe-checkout ASSINA eventos de mfe-products via EventBus.
-// Ele nunca importa nada de mfe-products diretamente.
-// O contrato é @org/contracts — declarado como singleton compartilhado.
+// KEY POINT of this remote:
+// mfe-checkout SUBSCRIBES to events from mfe-products via EventBus.
+// It never imports anything from mfe-products directly.
+// The contract is @org/contracts — declared as a shared singleton.
 
 const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
 

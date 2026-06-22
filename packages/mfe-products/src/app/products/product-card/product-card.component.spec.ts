@@ -6,10 +6,10 @@ import { Product } from '@org/contracts';
 const mockProduct: Product = {
   id: '1',
   name: 'Angular T-Shirt',
-  description: 'Camiseta oficial da comunidade Angular.',
+  description: 'Official Angular community shirt. 100% cotton.',
   price: 29.99,
   imageUrl: 'https://placehold.co/280x280/dd0031/white?text=Angular',
-  category: 'Vestuário',
+  category: 'Apparel',
   stock: 42,
 };
 
@@ -41,16 +41,16 @@ describe('ProductCardComponent', () => {
     fixture.componentRef.setInput('product', mockProduct);
     fixture.detectChanges();
     const category = fixture.debugElement.query(By.css('.product-category'));
-    expect(category.nativeElement.textContent.trim()).toBe('Vestuário');
+    expect(category.nativeElement.textContent.trim()).toBe('Apparel');
   });
 
-  it('should display product price formatted in BRL', () => {
+  it('should display product price formatted in USD', () => {
     const fixture = TestBed.createComponent(ProductCardComponent);
     fixture.componentRef.setInput('product', mockProduct);
     fixture.detectChanges();
     const price = fixture.debugElement.query(By.css('.product-price'));
     // Currency symbol and value — locale may use '.' or ',' as decimal separator
-    expect(price.nativeElement.textContent).toMatch(/R\$\s*29[.,]99/);
+    expect(price.nativeElement.textContent).toMatch(/\$\s*29[.,]99/);
   });
 
   it('should display stock count', () => {
@@ -61,21 +61,21 @@ describe('ProductCardComponent', () => {
     expect(stock.nativeElement.textContent).toContain('42');
   });
 
-  it('should render button with "Adicionar ao Carrinho" when in stock', () => {
+  it('should render button with "Add to Cart" when in stock', () => {
     const fixture = TestBed.createComponent(ProductCardComponent);
     fixture.componentRef.setInput('product', mockProduct);
     fixture.detectChanges();
     const btn = fixture.debugElement.query(By.css('button.btn-add'));
-    expect(btn.nativeElement.textContent.trim()).toContain('Adicionar ao Carrinho');
+    expect(btn.nativeElement.textContent.trim()).toContain('Add to Cart');
     expect(btn.nativeElement.disabled).toBe(false);
   });
 
-  it('should render disabled button with "Esgotado" when out of stock', () => {
+  it('should render disabled button with "Out of Stock" when out of stock', () => {
     const fixture = TestBed.createComponent(ProductCardComponent);
     fixture.componentRef.setInput('product', outOfStockProduct);
     fixture.detectChanges();
     const btn = fixture.debugElement.query(By.css('button.btn-add'));
-    expect(btn.nativeElement.textContent.trim()).toContain('Esgotado');
+    expect(btn.nativeElement.textContent.trim()).toContain('Out of Stock');
     expect(btn.nativeElement.disabled).toBe(true);
   });
 

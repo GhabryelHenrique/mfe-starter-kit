@@ -1,9 +1,9 @@
-// events.ts — Discriminated union de todos os eventos cross-MFE.
+// events.ts — Discriminated union of all cross-MFE events.
 //
 // WHY discriminated union?
-// TypeScript faz narrowing pelo campo `type` literal. Consumidores nunca
-// precisam de cast. Adicionar um novo evento é seguro em tempo de compilação:
-// qualquer switch/if que não tratar o novo case causa erro de TS.
+// TypeScript narrows by the literal `type` field. Consumers never need a cast.
+// Adding a new event is compile-time safe: any switch/if that doesn't handle
+// the new case produces a TS error.
 
 import { CartItem } from './models/cart.model';
 import { Product } from './models/product.model';
@@ -26,5 +26,5 @@ export interface CartClearedEvent {
   type: 'CART_CLEARED';
 }
 
-// União de todos os eventos possíveis — expanda conforme novos MFEs forem adicionados.
+// Union of all possible events — expand as new MFEs are added.
 export type MfeEvent = ProductSelectedEvent | CartUpdatedEvent | CartClearedEvent;

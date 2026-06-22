@@ -1,23 +1,25 @@
 # Shared Dependencies Strategy
 
-## Por que compartilhar dependências em MFEs?
+🇧🇷 [Leia em Português](./SHARED_DEPS.pt-BR.md)
 
-Em uma arquitetura de Microfrontends, cada remote é uma aplicação Angular construída separadamente. Sem compartilhamento, o navegador baixaria Angular core, RxJS e zone.js para CADA remote — facilmente 3x o payload de um monolito.
+## Why share dependencies in MFEs?
 
-Native Federation resolve isso com um **Import Map**: pacotes compartilhados são baixados uma vez e reutilizados em todos os MFEs na mesma sessão do navegador.
+In a Microfrontend architecture, each remote is an Angular application built separately. Without sharing, the browser would download Angular core, RxJS, and zone.js for EACH remote — easily 3x the payload of a monolith.
+
+Native Federation solves this with an **Import Map**: shared packages are downloaded once and reused across all MFEs in the same browser session.
 
 ---
 
-## O Trade-off `strictVersion`
+## The `strictVersion` trade-off
 
-| Opção | Comportamento | Quando usar |
+| Option | Behavior | When to use |
 |---|---|---|
-| `strictVersion: false` | Um remote construído com rxjs@7.8.1 pode usar o rxjs@7.8.0 do host | Libs utilitárias com APIs estáveis (rxjs, tslib, lodash) |
-| `strictVersion: true` | Divergência de versão lança um erro em **RUNTIME** | Pacotes Angular — DI system é global e sensível à versão |
+| `strictVersion: false` | A remote built with rxjs@7.8.1 can use the host's rxjs@7.8.0 | Utility libs with stable APIs (rxjs, tslib, lodash) |
+| `strictVersion: true` | Version mismatch throws an error at **RUNTIME** | Angular packages — DI system is global and version-sensitive |
 
-**Regra:** Use `strictVersion: true` apenas para pacotes onde rodar duas instâncias simultaneamente causaria bugs de correção, não apenas tamanho de bundle sub-ótimo.
+**Rule:** Use `strictVersion: true` only for packages where running two instances simultaneously would cause correctness bugs, not just sub-optimal bundle size.
 
-### Exemplo de falha com `strictVersion: true`
+### Example failure with `strictVersion: true`
 
 ```
 Error: Unsatisfied version constraint for '@angular/core':
@@ -25,19 +27,19 @@ Error: Unsatisfied version constraint for '@angular/core':
   Found: 17.3.12
 ```
 
-Isso acontece quando shell e remote têm versões incompatíveis de Angular. A solução é manter todos os MFEs no mesmo major.minor de Angular.
+This happens when the shell and a remote have incompatible Angular versions. The fix is to keep all MFEs on the same Angular major.minor.
 
 ---
 
-## Estratégia deste starter kit
+## Strategy used in this starter kit
 
 ```js
-// federation.config.js — padrão aplicado em TODOS os pacotes
+// federation.config.js — pattern applied to ALL packages
 shared: {
-  // Baseline: compartilha tudo, permite divergência de patch/minor
+  // Baseline: share everything, allow patch/minor divergence
   ...shareAll({ singleton: true, strictVersion: false, requiredVersion: 'auto' }),
 
-  // Override para Angular — DI global, zero tolerância a versões diferentes
+  // Override for Angular — global DI, zero tolerance for version differences
   '@angular/core':             { singleton: true, strictVersion: true, requiredVersion: 'auto' },
   '@angular/common':           { singleton: true, strictVersion: true, requiredVersion: 'auto' },
   '@angular/router':           { singleton: true, strictVersion: true, requiredVersion: 'auto' },
@@ -45,58 +47,58 @@ shared: {
   '@angular/platform-browser': { singleton: true, strictVersion: true, requiredVersion: 'auto' },
   '@angular/animations':       { singleton: true, strictVersion: true, requiredVersion: 'auto' },
 
-  // @org/contracts DEVE ser singleton para o EventBusService compartilhar o mesmo Subject
+  // @org/contracts MUST be singleton for EventBusService to share the same Subject
   '@org/contracts': { singleton: true, strictVersion: true, requiredVersion: 'auto' },
 }
 ```
 
 ---
 
-## `@org/contracts` como singleton — por que é crítico
+## `@org/contracts` as singleton — why it's critical
 
-O `EventBusService` usa um singleton de módulo JS (`static getInstance()`). Para que o **mesmo** `Subject<MfeEvent>` seja compartilhado entre shell, mfe-products e mfe-checkout, o módulo `@org/contracts` deve ser carregado **uma única vez** pelo navegador.
+`EventBusService` uses a JS module singleton (`static getInstance()`). For the **same** `Subject<MfeEvent>` to be shared among the shell, mfe-products, and mfe-checkout, the `@org/contracts` module must be loaded **exactly once** by the browser.
 
-Isso só acontece se `@org/contracts` estiver no mapa `shared` com `singleton: true`. Sem isso:
+This only happens if `@org/contracts` is in the `shared` map with `singleton: true`. Without it:
 
 ```
-Shell            → carrega @org/contracts v1.0.0 → Subject A
-mfe-products     → carrega @org/contracts v1.0.0 → Subject B (instância diferente!)
-mfe-checkout     → carrega @org/contracts v1.0.0 → Subject C (instância diferente!)
+shell        → loads @org/contracts v1.0.0 → Subject A
+mfe-products → loads @org/contracts v1.0.0 → Subject B (different instance!)
+mfe-checkout → loads @org/contracts v1.0.0 → Subject C (different instance!)
 ```
 
-`bus.emit(PRODUCT_SELECTED)` no mfe-products emite no Subject B. mfe-checkout assina o Subject C. **Nenhum evento chega.** Esse bug é silencioso e difícil de diagnosticar.
+`bus.emit(PRODUCT_SELECTED)` in mfe-products emits on Subject B. mfe-checkout subscribes to Subject C. **No event arrives.** This bug is silent and hard to diagnose.
 
 ---
 
 ## `file:` vs GitHub Packages
 
-Em desenvolvimento local, cada Angular app referencia contracts como:
+In local development, each Angular app references contracts as:
 
 ```json
 "@org/contracts": "file:../mfe-contracts"
 ```
 
-Em produção (polyrepo real), cada repo publica e consome do registry:
+In production (real polyrepo), each repo publishes and consumes from the registry:
 
 ```json
 "@org/contracts": "^1.0.0"
 ```
 
-Com `.npmrc`:
+With `.npmrc`:
 ```
 @org:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${NPM_TOKEN}
 ```
 
-A única mudança no código é esta linha no `package.json`. A configuração de federation permanece igual.
+The only change in the code is this one line in `package.json`. The federation configuration remains identical.
 
 ---
 
-## Cache-busting do manifest em produção
+## Manifest cache-busting in production
 
-O `federation.manifest.prod.json` é um arquivo pequeno que o shell busca em runtime. CDNs tendem a cachear arquivos sem extensão especial. Se o manifest for cacheado com TTL alto, um deploy de remote não será "visto" pelo shell por horas.
+`federation.manifest.prod.json` is a small file the shell fetches at runtime. CDNs tend to cache files without special extensions. If the manifest is cached with a high TTL, a remote deploy won't be "seen" by the shell for hours.
 
-**Solução:** Configure `Cache-Control: no-cache` (ou TTL baixo) especificamente para `*.json` no seu CDN/servidor:
+**Solution:** Configure `Cache-Control: no-cache` (or a low TTL) specifically for `*.json` on your CDN/server:
 
 ```nginx
 location ~* \.json$ {
@@ -104,7 +106,7 @@ location ~* \.json$ {
 }
 ```
 
-Ou no Netlify/Vercel, via headers config:
+Or on Netlify/Vercel, via headers config:
 ```toml
 [[headers]]
   for = "/*.json"

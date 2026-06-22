@@ -9,22 +9,22 @@
     <p class="product-description">{{ product().description }}</p>
 
     <div class="product-footer">
-      <span class="product-price">{{ product().price | currency: 'BRL' }}</span>
+      <span class="product-price">{{ product().price | currency: 'USD' }}</span>
       <button
         class="btn-add"
         (click)="addToCart.emit(product())"
         [disabled]="product().stock === 0"
       >
         @if (product().stock > 0) {
-          Adicionar ao Carrinho
+          Add to Cart
         } @else {
-          Esgotado
+          Out of Stock
         }
       </button>
     </div>
 
     <span class="product-stock" [class.low]="product().stock < 10">
-      {{ product().stock }} em estoque
+      {{ product().stock }} in stock
     </span>
   </div>
 </article>

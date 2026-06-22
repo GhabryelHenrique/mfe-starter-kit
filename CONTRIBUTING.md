@@ -1,61 +1,63 @@
 # Contributing
 
-## Estrutura do repositório
+🇧🇷 [Leia em Português](./CONTRIBUTING.pt-BR.md)
 
-Este repo é um **polyrepo-in-a-monorepo**: um único repositório Git que contém quatro pacotes independentes em `packages/`. Em produção real, cada pacote vira seu próprio repositório Git + pipeline de CI/CD.
+## Repository structure
+
+This repo is a **polyrepo-in-a-monorepo**: a single Git repository containing four independent packages under `packages/`. In real production, each package becomes its own Git repository with its own CI/CD pipeline.
 
 ```
-mfe-starter-kit/       ← este repo (meta-repo de referência)
+mfe-starter-kit/       ← this repo (reference meta-repo)
 ├── packages/
-│   ├── mfe-contracts/ ← poderia ser: github.com/sua-org/mfe-contracts
-│   ├── mfe-shell/     ← poderia ser: github.com/sua-org/mfe-shell
-│   ├── mfe-products/  ← poderia ser: github.com/sua-org/mfe-products
-│   └── mfe-checkout/  ← poderia ser: github.com/sua-org/mfe-checkout
+│   ├── mfe-contracts/ ← could be: github.com/your-org/mfe-contracts
+│   ├── mfe-shell/     ← could be: github.com/your-org/mfe-shell
+│   ├── mfe-products/  ← could be: github.com/your-org/mfe-products
+│   └── mfe-checkout/  ← could be: github.com/your-org/mfe-checkout
 ```
 
-## Como extrair para polyrepo real
+## How to extract to a real polyrepo
 
-1. Crie 4 repositórios separados na sua org
-2. Para cada pacote:
+1. Create 4 separate repositories in your org
+2. For each package:
    ```bash
    cd packages/mfe-xxx
    git init
-   git remote add origin https://github.com/sua-org/mfe-xxx.git
+   git remote add origin https://github.com/your-org/mfe-xxx.git
    git add .
    git commit -m "initial commit"
    git push -u origin main
    ```
-3. Em cada `package.json` de Angular app, troque:
+3. In each Angular app's `package.json`, replace:
    ```json
    "@org/contracts": "file:../mfe-contracts"
    ```
-   por:
+   with:
    ```json
    "@org/contracts": "^1.0.0"
    ```
-4. Configure `.npmrc` com seu GitHub Packages token
-5. Cada repo usa seu próprio `ci-*.yml` (copie de `.github/workflows/`)
+4. Set up `.npmrc` with your GitHub Packages token
+5. Each repo uses its own `ci-*.yml` (copy from `.github/workflows/`)
 
-## Convenções
+## Conventions
 
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`)
-- **Branches:** `feat/nome-da-feature`, `fix/nome-do-bug`
-- **Pull Requests:** Título em inglês, descrição em português é ok
+- **Branches:** `feat/feature-name`, `fix/bug-name`
+- **Pull Requests:** English title and description
 
-## Rodando localmente
+## Running locally
 
 ```bash
-npm run install:all   # instala deps de todos os pacotes
-npm run build:contracts  # compila @org/contracts primeiro
-npm run dev           # inicia todos os 4 pacotes em paralelo
+npm run install:all      # install deps for all packages
+npm run build:contracts  # build @org/contracts first
+npm run dev              # start all 4 packages in parallel
 ```
 
-## Adicionando um novo remote
+## Adding a new remote
 
-1. Gere o projeto Angular: `ng new mfe-nome --routing --style=scss`
-2. Adicione native federation: `ng add @angular-architects/native-federation --type remote --port 4203`
-3. Copie o padrão de `federation.config.js` do mfe-products
-4. Adicione a entrada no `federation.manifest.dev.json` do shell
-5. Adicione a rota em `packages/mfe-shell/src/app/app.routes.ts`
-6. Adicione o processo no `scripts/dev.js`
-7. Crie `.github/workflows/ci-nome.yml`
+1. Generate the Angular project: `ng new mfe-name --routing --style=scss`
+2. Add native federation: `ng add @angular-architects/native-federation --type remote --port 4203`
+3. Copy the `federation.config.js` pattern from mfe-products
+4. Add the entry to `federation.manifest.dev.json` in the shell
+5. Add the route in `packages/mfe-shell/src/app/app.routes.ts`
+6. Add the process in `scripts/dev.js`
+7. Create `.github/workflows/ci-name.yml`

@@ -1,5 +1,5 @@
-// main.ts — Ponto de entrada do remote.
-// Remotes chamam initFederation() sem argumentos. Ver mfe-products/src/main.ts.
+// main.ts — Remote entry point.
+// Remotes call initFederation() without arguments. See mfe-products/src/main.ts.
 
 import { initFederation } from '@angular-architects/native-federation';
 

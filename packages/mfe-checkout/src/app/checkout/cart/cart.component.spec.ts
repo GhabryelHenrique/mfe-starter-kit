@@ -5,11 +5,11 @@ import { CartItem } from '@org/contracts';
 
 const mockItems: CartItem[] = [
   {
-    product: { id: '1', name: 'Angular T-Shirt', description: 'Desc', price: 29.99, imageUrl: '', category: 'Vestuário', stock: 42 },
+    product: { id: '1', name: 'Angular T-Shirt', description: 'Desc', price: 29.99, imageUrl: '', category: 'Apparel', stock: 42 },
     quantity: 2,
   },
   {
-    product: { id: '2', name: 'RxJS Mug', description: 'Desc', price: 14.99, imageUrl: '', category: 'Acessórios', stock: 18 },
+    product: { id: '2', name: 'RxJS Mug', description: 'Desc', price: 14.99, imageUrl: '', category: 'Accessories', stock: 18 },
     quantity: 1,
   },
 ];
@@ -35,7 +35,7 @@ describe('CartComponent', () => {
     fixture.detectChanges();
     const empty = fixture.debugElement.query(By.css('.cart-empty'));
     expect(empty).toBeTruthy();
-    expect(empty.nativeElement.textContent).toContain('carrinho está vazio');
+    expect(empty.nativeElement.textContent).toContain('cart is empty');
   });
 
   it('should not show cart list when empty', () => {
@@ -81,10 +81,10 @@ describe('CartComponent', () => {
     fixture.componentRef.setInput('totalPrice', 74.97);
     fixture.detectChanges();
     const total = fixture.debugElement.query(By.css('.cart-total'));
-    expect(total.nativeElement.textContent).toMatch(/R\$\s*74[.,]97/);
+    expect(total.nativeElement.textContent).toMatch(/\$\s*74[.,]97/);
   });
 
-  it('should emit clearCart when "Limpar" button is clicked', () => {
+  it('should emit clearCart when "Clear" button is clicked', () => {
     const fixture = TestBed.createComponent(CartComponent);
     fixture.componentRef.setInput('items', mockItems);
     fixture.componentRef.setInput('totalPrice', 74.97);

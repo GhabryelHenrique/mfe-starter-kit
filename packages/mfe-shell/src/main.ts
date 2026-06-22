@@ -1,14 +1,14 @@
-// main.ts — Ponto de entrada do shell.
+// main.ts — Shell entry point.
 //
-// initFederation() DEVE ser chamado ANTES de bootstrapApplication().
-// WHY: Native Federation gera um Import Map em tempo de build. Em runtime,
-// initFederation() busca o manifest, resolve as URLs dos remotes e injeta
-// o Import Map no browser. bootstrapApplication() precisa rodar DEPOIS que
-// o Import Map estiver populado, caso contrário loadRemoteModule() dentro
-// de app.routes.ts não consegue resolver as URLs dos remotes.
+// initFederation() MUST be called BEFORE bootstrapApplication().
+// WHY: Native Federation generates an Import Map at build time. At runtime,
+// initFederation() fetches the manifest, resolves remote URLs, and injects
+// the Import Map into the browser. bootstrapApplication() must run AFTER
+// the Import Map is populated — otherwise loadRemoteModule() calls inside
+// app.routes.ts cannot resolve remote URLs.
 //
-// SELEÇÃO DE MANIFEST POR AMBIENTE:
-// O arquivo environment.ts é trocado via fileReplacements no angular.json:
+// PER-ENVIRONMENT MANIFEST SELECTION:
+// environment.ts is swapped via fileReplacements in angular.json:
 //   development → src/environments/environment.ts       (federation.manifest.dev.json)
 //   staging     → src/environments/environment.staging.ts (federation.manifest.staging.json)
 //   production  → src/environments/environment.prod.ts  (federation.manifest.prod.json)

@@ -7,10 +7,10 @@
     "dev": "node scripts/dev.js",
     "build:contracts": "cd packages/mfe-contracts && npm run build",
     "build:all": "npm run build:contracts && concurrently \"cd packages/mfe-shell && ng build\" \"cd packages/mfe-products && ng build\" \"cd packages/mfe-checkout && ng build\"",
-    "docs": "cd packages/mfe-docs && ng serve --port 4203",
-    "install:all": "npm install && cd packages/mfe-contracts && npm install && cd ../mfe-shell && npm install && cd ../mfe-products && npm install && cd ../mfe-checkout && npm install && cd ../mfe-docs && npm install",
-    "test:all": "cd packages/mfe-contracts && npm test && cd ../mfe-shell && npm test && cd ../mfe-products && npm test && cd ../mfe-checkout && npm test && cd ../mfe-docs && npm test",
-    "test:coverage:all": "cd packages/mfe-contracts && npm run test:coverage && cd ../mfe-shell && npm run test:coverage && cd ../mfe-products && npm run test:coverage && cd ../mfe-checkout && npm run test:coverage && cd ../mfe-docs && npm run test:coverage"
+    "docs": "cd packages/docs-starter-kit && ng serve --port 4203",
+    "install:all": "npm install && cd packages/mfe-contracts && npm install && cd ../mfe-shell && npm install && cd ../mfe-products && npm install && cd ../mfe-checkout && npm install && cd ../docs-starter-kit && npm install",
+    "test:all": "cd packages/mfe-contracts && npm test && cd ../mfe-shell && npm test && cd ../mfe-products && npm test && cd ../mfe-checkout && npm test && cd ../docs-starter-kit && npm test",
+    "test:coverage:all": "cd packages/mfe-contracts && npm run test:coverage && cd ../mfe-shell && npm run test:coverage && cd ../mfe-products && npm run test:coverage && cd ../mfe-checkout && npm run test:coverage && cd ../docs-starter-kit && npm run test:coverage"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"

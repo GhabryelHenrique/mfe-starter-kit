@@ -1,0 +1,47 @@
+# ci-checkout.yml — CI/CD para o mfe-checkout (remote).
+# Mesmo padrão do ci-products.yml — consulte aquele arquivo para comentários detalhados.
+
+name: CI — Checkout Remote
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/ci-docs.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+
+defaults:
+  run:
+    working-directory: docs
+
+jobs:
+  build:
+    name: Build & Deploy Checkout Remote
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install & build @org/contracts
+        working-directory: packages/mfe-contracts
+        run: npm ci && npm run build
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy 
+        run: npm run deploy

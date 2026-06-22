@@ -8,3 +8,4 @@ Thumbs.db
 .env.local
 packages/mfe-contracts/dist/
 coverage/
+.vscode/

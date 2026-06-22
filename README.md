@@ -128,7 +128,7 @@ None of these actions involve a direct import between `mfe-products` and `mfe-ch
 | `mfe-products` | 4201 | Remote | `./Routes` → ProductsListComponent |
 | `mfe-checkout` | 4202 | Remote | `./Routes` → CheckoutPageComponent |
 | `mfe-contracts` | — | TS Library | EventBus, MfeEvent, Product, CartItem |
-| `mfe-docs` | 4203 | Docs app | — |
+| `docs-starter-kit` | 4203 | Docs app | — |
 
 ---
 
@@ -265,7 +265,7 @@ mfe-starter-kit/
 │   ├── mfe-checkout/
 │   │   ├── federation.config.js      # remote: exposes './Routes'
 │   │   └── src/app/checkout/         # CheckoutPage (subscribe), Cart
-│   └── mfe-docs/
+│   └── docs-starter-kit/
 │       └── src/app/pages/            # Interactive documentation (:4203)
 ├── scripts/dev.js         # concurrently: contracts + 3 Angular apps
 ├── SHARED_DEPS.md         # full strictVersion trade-off analysis
@@ -324,7 +324,7 @@ ng add @angular-architects/native-federation@^21 --type remote --port 4204
 - [x] Per-environment manifest (dev / staging / prod)
 - [x] Per-route error boundary
 - [x] Independent CI/CD per remote
-- [x] Documentation app (`mfe-docs`)
+- [x] Documentation app (`docs-starter-kit`)
 - [ ] mfe-dashboard (third example remote)
 - [ ] Integrated auth guard (JWT + interceptor in the shell)
 - [ ] E2E tests with Playwright (shell loads real remotes)

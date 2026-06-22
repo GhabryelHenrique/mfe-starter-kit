@@ -4,16 +4,16 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/mfe-docs/**'
+      - 'docs/**'
       - '.github/workflows/ci-docs.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'packages/mfe-docs/**'
+      - 'docs/**'
 
 defaults:
   run:
-    working-directory: packages/mfe-docs
+    working-directory: docs
 
 jobs:
   build-and-deploy:
@@ -28,9 +28,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
-          cache-dependency-path: packages/mfe-docs/package-lock.json
+          cache-dependency-path: docs/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -41,13 +41,12 @@ jobs:
       # gh-pages serves 404.html for direct URL access — copy index.html so deep links work
       - name: Copy index.html → 404.html
         run: cp dist/mfe-docs/browser/index.html dist/mfe-docs/browser/404.html
-        working-directory: packages/mfe-docs
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         if: github.event_name == 'push'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/mfe-docs/dist/mfe-docs/browser
+          publish_dir: ./docs/dist/mfe-docs/browser
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'

@@ -38,9 +38,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
-          cache-dependency-path: packages/mfe-shell/package-lock.json
+          cache-dependency-path: '**/package-lock.json'
 
       # Contracts é dependência file: do shell — deve ser buildado primeiro.
       - name: Install & build @org/contracts

@@ -75,7 +75,7 @@ describe('EventBusService', () => {
   });
 
   it('on("PRODUCT_SELECTED") should deliver typed events with correct payload', () => {
-    const received: Array<{ id: number; name: string }> = [];
+    const received: Array<{ id: string; name: string }> = [];
     const sub = service.on('PRODUCT_SELECTED').subscribe(e => received.push(e.payload));
 
     service.emit({ type: 'PRODUCT_SELECTED', payload: { id: '42', name: 'Mouse', description: '', price: 99, imageUrl: '', category: '', stock: 5 } });

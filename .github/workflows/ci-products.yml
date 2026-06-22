@@ -1,0 +1,81 @@
+# ci-products.yml — CI/CD para o mfe-products (remote).
+#
+# DIFERENÇA CHAVE em relação ao ci-shell.yml:
+# Após deployar um remote, o federation.manifest.prod.json no SHELL
+# pode precisar ser atualizado com a nova URL do remote (se ela mudar
+# a cada deploy, como ocorre com Netlify Deploy Previews ou hash de conteúdo).
+#
+# PADRÃO RECOMENDADO:
+# 1. Deploye o remote → capture a URL deployada
+# 2. Abra um PR no repo do shell atualizando o manifest
+# 3. O shell é redeployado apenas quando seu PR é mergeado
+#
+# Isso garante que o shell nunca aponte para uma URL inexistente.
+
+name: CI — Products Remote
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/mfe-products/**'
+      - 'packages/mfe-contracts/src/**'
+      - '.github/workflows/ci-products.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/mfe-products/**'
+
+defaults:
+  run:
+    working-directory: packages/mfe-products
+
+jobs:
+  build:
+    name: Build & Deploy Products Remote
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: packages/mfe-products/package-lock.json
+
+      - name: Install & build @org/contracts
+        working-directory: packages/mfe-contracts
+        run: npm ci && npm run build
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # ─── DEPLOY + ATUALIZAÇÃO DO MANIFEST ───────────────────────────────────
+      # Passo 1: Deploy dist/mfe-products/browser para seu CDN.
+      # Passo 2: Capture a URL deployada (ex: saída do netlify-cli).
+      # Passo 3: Atualize federation.manifest.prod.json no shell:
+      #
+      #   NEW_URL="https://products-abc123.netlify.app"
+      #   jq --arg url "$NEW_URL/remoteEntry.json" \
+      #     '.["mfe-products"] = $url' \
+      #     packages/mfe-shell/public/federation.manifest.prod.json > /tmp/manifest.json
+      #   mv /tmp/manifest.json packages/mfe-shell/public/federation.manifest.prod.json
+      #
+      # Passo 4: Commit + push do manifest atualizado (ou abra PR).
+      #
+      # WHY isso é importante:
+      # CDNs com URLs hasheadas geram uma URL nova a cada deploy.
+      # Se o manifest ainda aponta para a URL antiga, o shell serve
+      # o bundle antigo mesmo depois do deploy. O manifest é o
+      # "source of truth" das versões em produção.
+      # ────────────────────────────────────────────────────────────────────────
+      - name: Deploy & update manifest (placeholder)
+        run: |
+          echo "1. Deploy dist/mfe-products/browser para seu CDN"
+          echo "2. Atualize packages/mfe-shell/public/federation.manifest.prod.json com a nova URL"
+        if: github.event_name == 'push'

@@ -1,0 +1,36 @@
+<section class="checkout-section">
+  <header class="checkout-header">
+    <h1>Checkout</h1>
+    <p class="checkout-subtitle">
+      Renderizado por <strong>mfe-checkout</strong> — itens chegam via Event Bus,
+      sem nenhum import direto de mfe-products.
+    </p>
+  </header>
+
+  <div class="checkout-content">
+    <div class="cart-container">
+      <h2>Carrinho ({{ totalQuantity() }} itens)</h2>
+      <app-cart
+        [items]="cartItems()"
+        [totalPrice]="totalPrice()"
+        (clearCart)="onClearCart()"
+      />
+    </div>
+
+    <aside class="checkout-info">
+      <div class="info-card">
+        <h3>Como funciona</h3>
+        <ol>
+          <li>Vá para <strong>Products</strong></li>
+          <li>Clique "Adicionar ao Carrinho"</li>
+          <li>Observe o badge no header atualizar</li>
+          <li>Volte aqui — os itens aparecem</li>
+        </ol>
+        <p class="info-note">
+          Nenhuma comunicação direta entre MFEs.
+          Apenas <code>&#64;org/contracts</code>.
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>

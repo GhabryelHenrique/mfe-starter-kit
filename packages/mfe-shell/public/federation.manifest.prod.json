@@ -1,0 +1,4 @@
+{
+  "mfe-products": "https://products.your-org.app/remoteEntry.json",
+  "mfe-checkout": "https://checkout.your-org.app/remoteEntry.json"
+}

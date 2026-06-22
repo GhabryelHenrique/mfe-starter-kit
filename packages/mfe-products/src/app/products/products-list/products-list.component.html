@@ -1,0 +1,18 @@
+<section class="products-section">
+  <header class="products-header">
+    <h1>Catálogo de Produtos</h1>
+    <p class="products-subtitle">
+      Renderizado por <strong>mfe-products</strong> — clique "Adicionar ao Carrinho"
+      e observe o badge no header atualizar via Event Bus.
+    </p>
+  </header>
+
+  <div class="products-grid">
+    @for (product of products; track product.id) {
+      <app-product-card
+        [product]="product"
+        (addToCart)="addToCart($event)"
+      />
+    }
+  </div>
+</section>

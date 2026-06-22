@@ -1,0 +1,20 @@
+{
+  "name": "@org/mfe-starter-kit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade Angular Microfrontend Starter Kit using Native Federation (polyrepo)",
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "build:contracts": "cd packages/mfe-contracts && npm run build",
+    "build:all": "npm run build:contracts && concurrently \"cd packages/mfe-shell && ng build\" \"cd packages/mfe-products && ng build\" \"cd packages/mfe-checkout && ng build\"",
+    "docs": "cd packages/mfe-docs && ng serve --port 4203",
+    "install:all": "npm install && cd packages/mfe-contracts && npm install && cd ../mfe-shell && npm install && cd ../mfe-products && npm install && cd ../mfe-checkout && npm install && cd ../mfe-docs && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

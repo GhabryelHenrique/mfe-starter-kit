@@ -1,0 +1,31 @@
+@if (items().length === 0) {
+  <div class="cart-empty">
+    <p>Seu carrinho está vazio.</p>
+    <p class="cart-hint">
+      Vá para <strong>Products</strong> e adicione itens para vê-los aqui.
+    </p>
+  </div>
+} @else {
+  <ul class="cart-list">
+    @for (item of items(); track item.product.id) {
+      <li class="cart-item">
+        <img [src]="item.product.imageUrl" [alt]="item.product.name" />
+        <div class="cart-item-details">
+          <span class="item-name">{{ item.product.name }}</span>
+          <span class="item-qty">Qtd: {{ item.quantity }}</span>
+        </div>
+        <span class="item-subtotal">
+          {{ item.product.price * item.quantity | currency: 'BRL' }}
+        </span>
+      </li>
+    }
+  </ul>
+
+  <div class="cart-footer">
+    <strong class="cart-total">Total: {{ totalPrice() | currency: 'BRL' }}</strong>
+    <div class="cart-actions">
+      <button class="btn-clear" (click)="clearCart.emit()">Limpar</button>
+      <button class="btn-checkout">Finalizar Pedido</button>
+    </div>
+  </div>
+}

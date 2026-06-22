@@ -1,0 +1,16 @@
+<header class="shell-header">
+  <a routerLink="/" class="logo">
+    <span class="logo-icon">&#9632;</span>
+    MFE Starter Kit
+  </a>
+
+  <nav class="shell-nav">
+    <a routerLink="/products" routerLinkActive="active">Products</a>
+    <a routerLink="/checkout" routerLinkActive="active" class="nav-cart">
+      Checkout
+      @if (cartCount() > 0) {
+        <span class="badge">{{ cartCount() }}</span>
+      }
+    </a>
+  </nav>
+</header>

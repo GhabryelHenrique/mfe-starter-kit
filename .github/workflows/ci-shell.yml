@@ -1,0 +1,82 @@
+# ci-shell.yml — CI/CD para o mfe-shell (host).
+#
+# Estratégia de trigger:
+#   push em main     → build produção + deploy
+#   push em develop  → build staging + deploy
+#   pull_request     → build apenas (sem deploy)
+#
+# Paths: disparado apenas quando arquivos relevantes mudam.
+# shell depende de contracts (types), então mudanças em contracts
+# também re-trigam o build do shell.
+
+name: CI — Shell
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/mfe-shell/**'
+      - 'packages/mfe-contracts/src/**'
+      - '.github/workflows/ci-shell.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/mfe-shell/**'
+
+defaults:
+  run:
+    working-directory: packages/mfe-shell
+
+jobs:
+  build:
+    name: Build & Test Shell
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: packages/mfe-shell/package-lock.json
+
+      # Contracts é dependência file: do shell — deve ser buildado primeiro.
+      - name: Install & build @org/contracts
+        working-directory: packages/mfe-contracts
+        run: npm ci && npm run build
+
+      - name: Install shell dependencies
+        run: npm ci
+
+      - name: Build shell (produção)
+        run: npm run build
+        if: github.ref == 'refs/heads/main'
+
+      - name: Build shell (staging)
+        run: npm run build:staging
+        if: github.ref == 'refs/heads/develop'
+
+      # ─── DEPLOY STEP ────────────────────────────────────────────────────────
+      # Substitua por seu comando de deploy real. Opções:
+      #
+      # Netlify:
+      #   run: npx netlify-cli deploy --prod --dir=dist/mfe-shell/browser
+      #   env: { NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}, NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_SHELL }} }
+      #
+      # Vercel:
+      #   run: npx vercel deploy --prod ./dist/mfe-shell/browser --token=${{ secrets.VERCEL_TOKEN }}
+      #
+      # GitHub Pages:
+      #   uses: peaceiris/actions-gh-pages@v4
+      #   with: { github_token: ${{ secrets.GITHUB_TOKEN }}, publish_dir: ./dist/mfe-shell/browser }
+      #
+      # IMPORTANTE: O shell raramente precisa ser redeployado.
+      # Ele só muda quando layout/router/manifest muda.
+      # Mudanças nos remotes NÃO requerem rebuild do shell — esse é o
+      # ponto central de uma arquitetura MFE com manifest em runtime.
+      # ────────────────────────────────────────────────────────────────────────
+      - name: Deploy (placeholder)
+        run: echo "Substitua por seu comando de deploy real"
+        if: github.event_name == 'push'

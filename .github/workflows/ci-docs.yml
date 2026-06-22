@@ -40,13 +40,13 @@ jobs:
 
       # gh-pages serves 404.html for direct URL access — copy index.html so deep links work
       - name: Copy index.html → 404.html
-        run: cp dist/mfe-docs/browser/index.html dist/mfe-docs/browser/404.html
+        run: cp dist/docs-starter-kit/browser/index.html dist/docs-starter-kit/browser/404.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         if: github.event_name == 'push'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/dist/mfe-docs/browser
+          publish_dir: ./docs/dist/docs-starter-kit/browser
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'

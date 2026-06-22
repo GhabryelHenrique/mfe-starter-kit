@@ -13,14 +13,18 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "build:watch": "tsc -p tsconfig.json --watch"
+    "build:watch": "tsc -p tsconfig.json --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "~5.8.0"
+    "@vitest/coverage-v8": "^4.1.9",
+    "typescript": "~5.8.0",
+    "vitest": "^4.1.9"
   },
   "peerDependencies": {
     "rxjs": "~7.8.0"
